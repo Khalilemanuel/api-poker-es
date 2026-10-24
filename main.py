@@ -1,16 +1,10 @@
-from fastapi import FastAPI
+"""Ponto de entrada da aplicação.
 
-app = FastAPI(
-    title="API de Pôquer - Engenharia de Software",
-    description="API para gerenciamento e partidas do sistema de pôquer.",
-    version="0.1.0"
-)
+Importa a instância 'app' configurada em app.main.
+Permite executar via `uvicorn main:app --reload` ou `uvicorn app.main:app --reload`.
+"""
+from app.main import app
 
-
-@app.get("/", tags=["Health Check"])
-def read_root():
-    return {
-        "status": "online",
-        "message": "Bem-vindo à API de Pôquer!",
-        "version": "0.1.0"
-    }
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run("app.main:app", host="127.0.0.1", port=8000, reload=True)
