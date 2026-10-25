@@ -21,6 +21,9 @@ def entrar_partida(id_partida: int, id_jogador: int) -> EntradaPartidaResponse:
     if partida is None:
         raise EntradaPartidaError("Partida não encontrada.", status.HTTP_404_NOT_FOUND)
 
+    if id_jogador in partida.jogadores:
+        raise EntradaPartidaError("O jogador já está nesta partida.", status.HTTP_409_CONFLICT)
+
     if partida.iniciada:
         raise EntradaPartidaError("A partida já foi iniciada.", status.HTTP_409_CONFLICT)
 
