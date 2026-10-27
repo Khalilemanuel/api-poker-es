@@ -1,6 +1,7 @@
 from fastapi import status
 
-from app.modules.lobby.schemas import EntradaPartidaResponse, Partida
+from app.modules.lobby.schemas import EntradaPartidaResponse, Partida, PartidaAbertaResponse
+
 
 
 class EntradaPartidaError(Exception):
@@ -38,3 +39,21 @@ def entrar_partida(id_partida: int, id_jogador: int) -> EntradaPartidaResponse:
         idPartida=id_partida,
         idJogador=id_jogador,
     )
+
+
+def listar_partidas_abertas(apenas_com_vagas: bool = False) -> list[PartidaAbertaResponse]:
+    """Retorna a lista de partidas abertas que ainda não foram iniciadas (US09).
+    
+    Parâmetros:
+        apenas_com_vagas: Se True, filtra apenas partidas que possuem vagas disponíveis.
+    """
+    partidas_ordenadas = sorted(partidas.values(), key=lambda p: p.id)
+    lista_abertas = []
+    for partida in partidas_ordenadas:
+        if partida.iniciada:
+            continue
+        if apenas_com_vagas and len(partida.jogadores) >= partida.max_jogadores:
+            continue
+        lista_abertas.append(PartidaAbertaResponse.from_partida(partida))
+    return lista_abertas
+
