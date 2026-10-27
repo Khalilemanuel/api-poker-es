@@ -17,7 +17,7 @@ router = APIRouter(tags=["Usuários"])
         "**Regras de Negócio e Validações:**\n"
         "- Nome, e-mail, username e senha são obrigatórios.\n"
         "- Formato de e-mail é validado estruturalmente.\n"
-        "- Senha deve possuir no mínimo 6 caracteres.\n"
+        "- Senha forte obrigatória: mínimo 6 caracteres, pelo menos 1 maiúscula, 1 número e 1 caractere especial.\n"
         "- O e-mail informado deve ser único (retorna 409 Conflict se duplicado).\n"
         "- O username informado deve ser único (retorna 409 Conflict se duplicado).\n"
         "- Ao ser cadastrado, o jogador recebe um ID único e saldo inicial de fichas."

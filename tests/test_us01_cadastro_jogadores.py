@@ -29,7 +29,7 @@ def test_cadastro_jogador_com_sucesso(client):
         "nome": "Khalil Angelim",
         "email": "khalil@poker.com",
         "username": "khalil_pro",
-        "senha": "senhaSegura123",
+        "senha": "SenhaSegura@123",
         "avatar": "avatar_khalil.png",
         "saldo_inicial": 1000.0,
     }
@@ -53,7 +53,7 @@ def test_cadastro_jogador_valores_padrao(client):
         "nome": "Novo Jogador",
         "email": "novo@poker.com",
         "username": "novo_player",
-        "senha": "senhaValida456",
+        "senha": "SenhaValida#456",
     }
 
     resposta = client.post("/poker/cadastro", json=payload)
@@ -70,7 +70,7 @@ def test_cadastro_jogador_email_duplicado(client):
         "nome": "Outro Carlos",
         "email": "carlos@poker.com",  # Email já existente
         "username": "outro_carlos",
-        "senha": "senhaValida123",
+        "senha": "SenhaValida!123",
     }
 
     resposta = client.post("/poker/cadastro", json=payload)
@@ -86,7 +86,7 @@ def test_cadastro_jogador_username_duplicado(client):
         "nome": "Carlos Segundo",
         "email": "carlos2@poker.com",
         "username": "carlos_poker",  # Username já existente
-        "senha": "senhaValida123",
+        "senha": "SenhaValida!123",
     }
 
     resposta = client.post("/poker/cadastro", json=payload)
@@ -102,7 +102,7 @@ def test_cadastro_jogador_email_invalido(client):
         "nome": "Jogador Invalido",
         "email": "email-invalido-sem-arroba",
         "username": "jogador_inv",
-        "senha": "senhaValida123",
+        "senha": "SenhaValida!123",
     }
 
     resposta = client.post("/poker/cadastro", json=payload)
@@ -114,7 +114,43 @@ def test_cadastro_jogador_senha_curta(client):
         "nome": "Jogador Senha Curta",
         "email": "curta@poker.com",
         "username": "senha_curta",
-        "senha": "123",  # Menos de 6 caracteres
+        "senha": "S@1",  # Menos de 6 caracteres
+    }
+
+    resposta = client.post("/poker/cadastro", json=payload)
+    assert resposta.status_code == 422
+
+
+def test_cadastro_jogador_senha_sem_maiuscula(client):
+    payload = {
+        "nome": "Jogador Sem Maiuscula",
+        "email": "sem_maiuscula@poker.com",
+        "username": "sem_maiuscula",
+        "senha": "senhasegura@123",  # Sem maiúscula
+    }
+
+    resposta = client.post("/poker/cadastro", json=payload)
+    assert resposta.status_code == 422
+
+
+def test_cadastro_jogador_senha_sem_numero(client):
+    payload = {
+        "nome": "Jogador Sem Numero",
+        "email": "sem_numero@poker.com",
+        "username": "sem_numero",
+        "senha": "SenhaSemNumero!",  # Sem número
+    }
+
+    resposta = client.post("/poker/cadastro", json=payload)
+    assert resposta.status_code == 422
+
+
+def test_cadastro_jogador_senha_sem_caractere_especial(client):
+    payload = {
+        "nome": "Jogador Sem Especial",
+        "email": "sem_especial@poker.com",
+        "username": "sem_especial",
+        "senha": "SenhaSegura123",  # Sem caractere especial
     }
 
     resposta = client.post("/poker/cadastro", json=payload)

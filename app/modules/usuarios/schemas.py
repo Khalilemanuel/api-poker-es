@@ -4,6 +4,19 @@ from pydantic import BaseModel, Field, field_validator
 EMAIL_REGEX = re.compile(r"^[\w\.-]+@[\w\.-]+\.\w+$")
 
 
+def validar_senha_forte(v: str) -> str:
+    """Valida se a senha atende aos requisitos de segurança: maiúscula, número e caractere especial."""
+    if len(v) < 6:
+        raise ValueError("A senha deve ter no mínimo 6 caracteres.")
+    if not re.search(r"[A-Z]", v):
+        raise ValueError("A senha deve conter pelo menos uma letra maiúscula.")
+    if not re.search(r"[0-9]", v):
+        raise ValueError("A senha deve conter pelo menos um número.")
+    if not re.search(r"[^a-zA-Z0-9]", v):
+        raise ValueError("A senha deve conter pelo menos um caractere especial (ex: @, #, $, !, etc.).")
+    return v
+
+
 class Credenciais(BaseModel):
     """Classe 7 do Diagrama UML - Credenciais de acesso."""
     email: str = Field(..., description="E-mail único de acesso do usuário.")
@@ -16,6 +29,11 @@ class Credenciais(BaseModel):
         if not EMAIL_REGEX.match(v):
             raise ValueError("Formato de e-mail inválido.")
         return v
+
+    @field_validator("senha")
+    @classmethod
+    def validar_senha(cls, v: str) -> str:
+        return validar_senha_forte(v)
 
 
 class Perfil(BaseModel):
@@ -41,7 +59,7 @@ class CadastroJogadorRequest(BaseModel):
     nome: str = Field(..., min_length=2, max_length=100, examples=["Khalil Angelim"], description="Nome completo do jogador.")
     email: str = Field(..., examples=["khalil@poker.com"], description="E-mail único para login.")
     username: str = Field(..., min_length=3, max_length=30, examples=["khalil_pro"], description="Username único para exibição nas partidas.")
-    senha: str = Field(..., min_length=6, examples=["senhaSegura123"], description="Senha de acesso (mínimo 6 caracteres).")
+    senha: str = Field(..., min_length=6, examples=["SenhaSegura@123"], description="Senha de acesso (mínimo 6 caracteres, 1 maiúscula, 1 número e 1 caractere especial).")
     avatar: str | None = Field(default="avatar_padrao.png", examples=["avatar_padrao.png"], description="Nome ou URL do avatar escolhido.")
     saldo_inicial: float = Field(default=1000.0, ge=0, examples=[1000.0], description="Saldo inicial de fichas concedido.")
 
@@ -60,6 +78,11 @@ class CadastroJogadorRequest(BaseModel):
         if len(v) < 3:
             raise ValueError("Username deve ter no mínimo 3 caracteres.")
         return v
+
+    @field_validator("senha")
+    @classmethod
+    def validar_senha(cls, v: str) -> str:
+        return validar_senha_forte(v)
 
 
 class CadastroJogadorResponse(BaseModel):
