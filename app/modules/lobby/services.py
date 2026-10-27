@@ -11,7 +11,7 @@ class EntradaPartidaError(Exception):
 
 partidas: dict[int, Partida] = {
     1: Partida(id=1),
-    2: Partida(id=2, jogadores=[10, 11], max_jogadores=2),
+    2: Partida(id=2, jogadores=[10, 11], max_jogadores=2, id_criador=10),
     3: Partida(id=3, jogadores=[20, 21], iniciada=True),
 }
 

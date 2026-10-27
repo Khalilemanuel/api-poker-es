@@ -6,6 +6,7 @@ class Partida(BaseModel):
     jogadores: list[int] = Field(default_factory=list)
     max_jogadores: int = Field(6, ge=2)
     iniciada: bool = False
+    id_criador: int | None = None
 
 
 class EntradaPartidaResponse(BaseModel):
