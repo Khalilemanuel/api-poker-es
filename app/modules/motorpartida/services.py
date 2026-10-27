@@ -1,7 +1,10 @@
+from dataclasses import dataclass
+
 from fastapi import status
 
-from app.modules.lobby.schemas import Partida
 from app.modules.lobby.services import partidas
+from app.modules.motorpartida.baralho import Baralho
+from app.modules.motorpartida.distribuicao import MaoJogador, distribuir_cartas
 
 MIN_JOGADORES = 2
 
@@ -13,7 +16,30 @@ class InicioPartidaError(Exception):
         self.status_code = status_code
 
 
-def iniciar_partida(id_partida: int, id_jogador: int) -> Partida:
+@dataclass
+class DistribuicaoPartida:
+    numero_mao: int
+    baralho: Baralho
+    maos: dict[int, MaoJogador]
+
+
+distribuicoes: dict[int, DistribuicaoPartida] = {}
+
+
+def nova_mao(id_partida: int, jogadores: list[int], baralho: Baralho | None = None) -> DistribuicaoPartida:
+    baralho = baralho or Baralho()
+    baralho.embaralhar()
+    anterior = distribuicoes.get(id_partida)
+    distribuicao = DistribuicaoPartida(
+        numero_mao=anterior.numero_mao + 1 if anterior else 1,
+        baralho=baralho,
+        maos=distribuir_cartas(jogadores, baralho),
+    )
+    distribuicoes[id_partida] = distribuicao
+    return distribuicao
+
+
+def iniciar_partida(id_partida: int, id_jogador: int) -> DistribuicaoPartida:
     partida = partidas.get(id_partida)
 
     if partida is None:
@@ -33,5 +59,6 @@ def iniciar_partida(id_partida: int, id_jogador: int) -> Partida:
             status.HTTP_409_CONFLICT,
         )
 
+    distribuicao = nova_mao(id_partida, list(partida.jogadores))
     partida.iniciada = True
-    return partida
+    return distribuicao
