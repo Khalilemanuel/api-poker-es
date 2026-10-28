@@ -1,3 +1,11 @@
+import sys
+from pathlib import Path
+
+# Garante que a raiz do projeto esteja no sys.path mesmo se executado diretamente
+_ROOT = Path(__file__).resolve().parent.parent
+if str(_ROOT) not in sys.path:
+    sys.path.insert(0, str(_ROOT))
+
 from fastapi import FastAPI
 from app.core.config import PROJECT_NAME, PROJECT_DESCRIPTION, PROJECT_VERSION, API_PREFIX
 from app.modules.autenticacao.routes import router as auth_router
@@ -30,3 +38,9 @@ app.include_router(lobby_router, prefix=API_PREFIX)
 app.include_router(motor_router, prefix=API_PREFIX)
 app.include_router(estatisticas_router, prefix=API_PREFIX)
 app.include_router(admin_router, prefix=API_PREFIX)
+
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run("app.main:app", host="127.0.0.1", port=8000, reload=True)
+
